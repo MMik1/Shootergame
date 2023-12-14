@@ -1,36 +1,35 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
+using UnityEngine.AI; 
 
 public class EnemyAttack : MonoBehaviour
-{ 
-    public Transform player;
+{
+    public GameObject player;
     public float attackRange = 3f;
 
     private Enemy enemyScript;
+    private bool foundPlayer;
 
-    public Material defaultMaterial;
-    public Material allerMaterial;
-    public Renderer ren;
     // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
+        player = GameObject.Find("Player");
         enemyScript = GetComponent<Enemy>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Vector3.Distance(transform.position, player.position) <= attackRange)
+        if (Vector3.Distance(transform.position, player.transform.position) <= attackRange)
         {
-            ren.sharedMaterial = allerMaterial;
-            enemyScript.badGuy.SetDestination(player.position);
+            enemyScript.badGuy.SetDestination(player.transform.position);
+            foundPlayer = true;
         }
-        else
+        else if (foundPlayer)
         {
-            ren.sharedMaterial = defaultMaterial;
             enemyScript.newLocation();
+            foundPlayer = false;
         }
     }
 }

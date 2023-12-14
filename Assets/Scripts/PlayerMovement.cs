@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -8,6 +7,8 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float walkSpeed = 5f;
     [SerializeField] private float runSpeed = 7f;
 
+    private int hitCount = 0;
+    private bool isDead = false;
     private Vector3 moveDirection;
     private Vector3 moveDirectionZ;
     private Vector3 moveDirectionX;
@@ -18,7 +19,6 @@ public class PlayerMovement : MonoBehaviour
 
     public CharacterController characterController;
 
-
     private void Start()
     {
         characterController = GetComponent<CharacterController>();
@@ -28,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         Move();
+
     }
 
     private void Move()
@@ -47,28 +48,21 @@ public class PlayerMovement : MonoBehaviour
         {
             Walk();
         }
-
         else if (moveDirection != Vector3.zero && Input.GetKey(KeyCode.LeftShift))
         {
             Run();
         }
         if (characterController.isGrounded)
         {
-
-
             if (Input.GetKey(KeyCode.Space))
             {
                 Jump();
             }
-
-
             if (moveDirection != Vector3.zero)
             {
                 Idle();
             }
         }
-
-
 
         characterController.Move(moveDirection * moveSpeed * Time.deltaTime);
 
@@ -93,8 +87,26 @@ public class PlayerMovement : MonoBehaviour
 
     private void Idle()
     {
-
+        // Your idle logic goes here
     }
 
+    public void Die()
+    {
+        if (!isDead)
+        {
+            SceneManager.LoadScene(2);
+            isDead = true;  // Set isDead to true to prevent multiple scene loads
+        }
+    }
 
+    public void TakeDamage()
+    {
+        hitCount++;
+        Debug.Log("Player Hit: " + hitCount);
+
+        if (hitCount >= 1)
+        {
+            Die();  // Load the "You Died" scene after the second hit
+        }
+    }
 }
